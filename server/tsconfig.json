@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es2018",
+        "module": "NodeNext", // Set module to 'NodeNext'
+        "moduleResolution": "NodeNext", // Set moduleResolution to 'NodeNext'
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "declaration": false,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "react",
+        "lib": ["es2018", "dom"]
+    },
+    "include": ["**/*.ts", "**/*.d.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
+}
