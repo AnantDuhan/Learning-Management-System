@@ -6,6 +6,7 @@ import ejs from 'ejs';
 import path from 'path';
 import sendEmail from "../utils/sendEmail";
 import { sendToken } from "../utils/jwt";
+import { redis } from "../config/redis";
 
 // register user
 interface IRegistrationBody {
@@ -125,7 +126,8 @@ export const activateUser = async (req: Request, res: Response, next: NextFuncti
         const user = await userModel.create({
             name,
             email,
-            password
+            password,
+            isVerified: true,
         });
 
         res.status(201).json({
@@ -175,7 +177,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
             });
         };
 
-        sendToken(user, 200, res);
+        sendToken(user, 201, res);
 ;
     } catch (error: any) {
         return res.status(400).json({
@@ -190,6 +192,9 @@ export const logoutUser = async (req: Request, res: Response, next: NextFunction
     try {
         res.cookie("access_token", "", { maxAge: 1 });
         res.cookie('refresh_token', '', { maxAge: 1 });
+
+        const userId = req.user?.id || '';
+        redis.del(userId)
 
         res.status(200).json({
             success: true,

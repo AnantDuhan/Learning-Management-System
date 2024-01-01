@@ -12,8 +12,8 @@ interface ITokenOptions {
 }
 
 export const sendToken = (user: IUser, statusCode: number, res: Response) => {
-    const accessToken = user.SignAccessToken;
-    const refreshToken = user.SignRefreshToken;
+    const accessToken = user.SignAccessToken();
+    const refreshToken = user.SignRefreshToken();
 
     // upload session to redis
     redis.set(user._id, JSON.stringify(user) as any);
@@ -56,4 +56,5 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
         user,
         accessToken,
     });
+
 };
