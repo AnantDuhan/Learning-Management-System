@@ -135,7 +135,7 @@ const courseSchema = new Schema<ICourse>({
         default: 0,
     },
     purchased: {
-        type: String,
+        type: Number,
         default: 0,
     },
 });

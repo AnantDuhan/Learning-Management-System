@@ -1,4 +1,4 @@
-import e, { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import courseModel from '../models/course.model';
 import cloudinary from 'cloudinary';
 import { createCourse } from '../services/course.service';
@@ -323,7 +323,7 @@ export const addAnswer = async (
 
             console.log('DATA', data.name);
 
-            const html = await ejs.renderFile(
+            await ejs.renderFile(
                 path.join(__dirname, '../mails/question-reply.ejs'),
                 data
             );
