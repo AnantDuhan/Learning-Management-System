@@ -13,7 +13,7 @@ interface ITokenOptions {
 
 // parse env variables to integrates with fallback values
 const accessTokenExpires = parseInt(
-    process.env.ACCESS_TOKEN_EXPIRE || '300',
+    process.env.ACCESS_TOKEN_EXPIRE || '500',
     10
 );
 const refreshTokenExpires = parseInt(

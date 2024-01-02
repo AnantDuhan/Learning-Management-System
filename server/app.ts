@@ -2,6 +2,7 @@ import express, { Response, Request, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.routes';
+import courseRouter from './routes/course.routes';
 require('dotenv').config();
 
 export const app = express();
@@ -13,6 +14,7 @@ app.use(cors({
 }));
 
 app.use('/api/v1', userRouter);
+app.use('/api/v1', courseRouter);
 
 app.get('/test', (_req: Request, res: Response, _next: NextFunction) => {
     res.status(200).json({

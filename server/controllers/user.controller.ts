@@ -1,13 +1,17 @@
-import e, { NextFunction, Request, Response } from "express";
-import userModel, { IUser } from "../models/user.model";
-import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+import { NextFunction, Request, Response } from 'express';
+import userModel, { IUser } from '../models/user.model';
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 require('dotenv').config();
 import ejs from 'ejs';
 import path from 'path';
-import sendEmail from "../utils/sendEmail";
-import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
-import { redis } from "../config/redis";
-import { getUserById } from "../services/user.service";
+import sendEmail from '../utils/sendEmail';
+import {
+    accessTokenOptions,
+    refreshTokenOptions,
+    sendToken,
+} from '../utils/jwt';
+import { redis } from '../config/redis';
+import { getUserById } from '../services/user.service';
 import cloudinary from 'cloudinary';
 
 // register user
@@ -26,14 +30,14 @@ export const registerUser = async (req: Request, res: Response) => {
         if (isEmailExist) {
             return res.status(400).json({
                 success: false,
-                message: 'Email already exists!'
+                message: 'Email already exists!',
             });
-        };
+        }
 
         const user: IRegistrationBody = {
             name,
             email,
-            password
+            password,
         };
 
         const activationToken = createActivationToken(user);
@@ -42,34 +46,36 @@ export const registerUser = async (req: Request, res: Response) => {
 
         const data = { name: user?.name, activationCode };
 
-        const html = await ejs.renderFile(path.join(__dirname, '../mails/activation-mail.ejs'), data);
+        const html = await ejs.renderFile(
+            path.join(__dirname, '../mails/activation-mail.ejs'),
+            data
+        );
 
         try {
             await sendEmail({
                 email: user.email,
                 subject: 'Activate your account',
-                template: "activation-mail.ejs",
-                data
+                template: 'activation-mail.ejs',
+                data,
             });
 
             res.status(201).json({
                 success: true,
                 message: `Please check your email: ${user.email} to activate your account`,
-                activationToken: activationToken.token
-            })
+                activationToken: activationToken.token,
+            });
         } catch (error: any) {
             return res.status(400).json({
                 success: false,
-                message: "Failed to register user!!",
-                error: error.message
-            })
+                message: 'Failed to register user!!',
+                error: error.message,
+            });
         }
-
     } catch (error: any) {
         return res.status(400).json({
             success: false,
-            error: error.message
-        })
+            error: error.message,
+        });
     }
 };
 
@@ -81,30 +87,38 @@ interface IActivationToken {
 export const createActivationToken = (user: any): IActivationToken => {
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-    const token = jwt.sign({
-        user,
-        activationCode
-    }, process.env.ACTIVATION_SECRET as string, {
-        expiresIn: '5m'
-    });
+    const token = jwt.sign(
+        {
+            user,
+            activationCode,
+        },
+        process.env.ACTIVATION_SECRET as string,
+        {
+            expiresIn: '2d',
+        }
+    );
 
-    return {token, activationCode}
+    return { token, activationCode };
 };
 
 // activate user
 interface IActivationRequest {
     activation_token: string;
     activation_code: string;
-};
+}
 
-export const activateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const activateUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { activation_token, activation_code } =
             req.body as IActivationRequest;
 
         const newUser: { user: IUser; activationCode: string } = jwt.verify(
             activation_token,
-            process.env.ACTIVATION_SECRET as string,
+            process.env.ACTIVATION_SECRET as string
         ) as { user: IUser; activationCode: string };
 
         if (newUser.activationCode !== activation_code) {
@@ -112,7 +126,7 @@ export const activateUser = async (req: Request, res: Response, next: NextFuncti
                 success: false,
                 message: 'Invalid activation code!!',
             });
-        };
+        }
 
         const { name, email, password } = newUser.user;
 
@@ -121,7 +135,7 @@ export const activateUser = async (req: Request, res: Response, next: NextFuncti
         if (existUser) {
             return res.status(400).json({
                 success: false,
-                message: "Email already exists"
+                message: 'Email already exists',
             });
         }
 
@@ -134,41 +148,44 @@ export const activateUser = async (req: Request, res: Response, next: NextFuncti
 
         res.status(201).json({
             success: true,
-            user
+            user,
         });
-
     } catch (error: any) {
         return res.status(400).json({
             success: false,
-            error: error.message
-        })
+            error: error.message,
+        });
     }
 };
 
 interface ILoginRequest {
     email: string;
     password: string;
-};
+}
 
-export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+export const loginUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { email, password } = req.body as ILoginRequest;
 
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Please enter email and password"
+                message: 'Please enter email and password',
             });
-        };
+        }
 
         const user = await userModel.findOne({ email }).select('+password');
 
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid email or password',
             });
-        };
+        }
 
         const isPasswordMatch = await user.comparePassword(password);
 
@@ -177,52 +194,61 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
                 success: false,
                 message: 'Invalid email or password',
             });
-        };
+        }
 
         sendToken(user, 201, res);
-;
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
 
-
-export const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
+export const logoutUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
-        res.cookie("access_token", "", { maxAge: 1 });
+        res.cookie('access_token', '', { maxAge: 1 });
         res.cookie('refresh_token', '', { maxAge: 1 });
 
         const userId = req.user?.id || '';
-        redis.del(userId)
+        redis.del(userId);
 
         res.status(200).json({
             success: true,
-            message: "User logged out successfully!!"
-        })
+            message: 'User logged out successfully!!',
+        });
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
 
 // update access token
-export const updateAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+export const updateAccessToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const refresh_token = req.cookies.refresh_token as string;
 
-        const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
+        const decoded = jwt.verify(
+            refresh_token,
+            process.env.REFRESH_TOKEN as string
+        ) as JwtPayload;
 
         const message = 'Could not refresh token';
         if (!decoded) {
-                return res.status(400).json({
-                    success: false,
-                    message,
-                });
+            return res.status(400).json({
+                success: false,
+                message,
+            });
         }
 
         const session = await redis.get(decoded.id as string);
@@ -235,9 +261,13 @@ export const updateAccessToken = async (req: Request, res: Response, next: NextF
 
         const user = JSON.parse(session);
 
-        const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN as string, {
-            expiresIn: '5m'
-        });
+        const accessToken = jwt.sign(
+            { id: user._id },
+            process.env.ACCESS_TOKEN as string,
+            {
+                expiresIn: '2d',
+            }
+        );
 
         const refreshToken = jwt.sign(
             { id: user._id },
@@ -249,44 +279,51 @@ export const updateAccessToken = async (req: Request, res: Response, next: NextF
 
         req.user = user;
 
-        res.cookie("access_token", accessToken, accessTokenOptions);
+        res.cookie('access_token', accessToken, accessTokenOptions);
         res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
         res.status(200).json({
             success: true,
-            accessToken
+            accessToken,
         });
-
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
 
 // get user info
-export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+export const getUserInfo = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const userId = req.user?._id;
 
         getUserById(userId, res);
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
 
 interface ISocialAuthBody {
     name: string;
     email: string;
-    avatar: string
+    avatar: string;
 }
 
 // social auth
-export const socialAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const socialAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { email, name, avatar } = req.body as ISocialAuthBody;
         const user = await userModel.findOne({ email });
@@ -297,7 +334,7 @@ export const socialAuth = async (req: Request, res: Response, next: NextFunction
             sendToken(user, 200, res);
         }
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
@@ -308,9 +345,13 @@ export const socialAuth = async (req: Request, res: Response, next: NextFunction
 interface IUpdateUserInfo {
     name?: string;
     email?: string;
-};
+}
 
-export const updateUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+export const updateUserInfo = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { name, email } = req.body as IUpdateUserInfo;
 
@@ -339,16 +380,15 @@ export const updateUserInfo = async (req: Request, res: Response, next: NextFunc
 
         res.status(200).json({
             success: true,
-            user
+            user,
         });
-
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
 
 // update password
 interface IUpdatePassword {
@@ -356,7 +396,11 @@ interface IUpdatePassword {
     newPassword: string;
 }
 
-export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+export const updatePassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { oldPassword, newPassword } = req.body as IUpdatePassword;
 
@@ -367,7 +411,9 @@ export const updatePassword = async (req: Request, res: Response, next: NextFunc
             });
         }
 
-        const user = await userModel.findById(req.user?._id).select('+password');
+        const user = await userModel
+            .findById(req.user?._id)
+            .select('+password');
         if (user?.password === undefined) {
             return res.status(400).json({
                 success: false,
@@ -391,25 +437,28 @@ export const updatePassword = async (req: Request, res: Response, next: NextFunc
 
         res.status(200).json({
             success: false,
-            user
+            user,
         });
-
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
 
 interface IUpdateProfilePicture {
     avatar: string;
 }
 
 // update profile picture
-export const updateProfilePicture = async (req: Request, res: Response, next: NextFunction) => {
+export const updateProfilePicture = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
-        const {avatar} = req.body;
+        const { avatar } = req.body;
 
         const userId = req.user?._id;
 
@@ -427,10 +476,9 @@ export const updateProfilePicture = async (req: Request, res: Response, next: Ne
                     public_id: myCloud.public_id,
                     url: myCloud.secure_url,
                 };
-
             } else {
                 const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-                    folder: 'food-delivery-avatars',
+                    folder: 'lms-avatars',
                     width: 150,
                 });
                 user.avatar = {
@@ -446,13 +494,12 @@ export const updateProfilePicture = async (req: Request, res: Response, next: Ne
 
         res.status(200).json({
             success: true,
-            user
+            user,
         });
-
     } catch (error: any) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             error: error.message,
         });
     }
-}
+};
