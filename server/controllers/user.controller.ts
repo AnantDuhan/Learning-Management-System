@@ -11,7 +11,7 @@ import {
     sendToken,
 } from '../utils/jwt';
 import { redis } from '../config/redis';
-import { getUserById } from '../services/user.service';
+import { getAllUsersService, getUserById, updateUserRoleService } from '../services/user.service';
 import cloudinary from 'cloudinary';
 
 // register user
@@ -503,3 +503,67 @@ export const updateProfilePicture = async (
         });
     }
 };
+
+// get all users -- admin
+export const getAllUsers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        getAllUsersService(res);
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+// update user role --admin
+export const updateUserRole = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id, role } = req.body;
+        updateUserRoleService(res, id, role);
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+// delete user -- admin
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        const user = await userModel.findById(id);
+
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        await user?.deleteOne({ id });
+
+        await redis.del(id);
+
+        res.status(200).json({
+            success: true,
+            message: 'User deleted successfully'
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.routes';
 import courseRouter from './routes/course.routes';
 import orderRouter from './routes/order.routes';
+import notificationRouter from './routes/notification.routes';
 require('dotenv').config();
 
 export const app = express();
@@ -17,6 +18,8 @@ app.use(cors({
 app.use('/api/v1', userRouter);
 app.use('/api/v1', courseRouter);
 app.use('/api/v1', orderRouter);
+app.use('/api/v1', notificationRouter);
+
 
 app.get('/test', (_req: Request, res: Response, _next: NextFunction) => {
     res.status(200).json({

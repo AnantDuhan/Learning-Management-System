@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import courseModel from '../models/course.model';
+import notificationModel from '../models/notification.model';
 import cloudinary from 'cloudinary';
-import { createCourse } from '../services/course.service';
+import { createCourse, getAllCoursesService } from '../services/course.service';
 import { redis } from '../config/redis';
 import mongoose from 'mongoose';
 import ejs from 'ejs';
@@ -239,6 +240,12 @@ export const addQuestion = async (
         // add this question to our course content
         courseContent.questions.push(newQuestion);
 
+        await notificationModel.create({
+            user: req.user?._id,
+            title: 'New Question Received',
+            message: `You have a new question in ${courseContent?.title}`,
+        });
+
         // save the updated course content
         await course?.save();
 
@@ -314,7 +321,11 @@ export const addAnswer = async (
         await course?.save();
 
         if (req.user?._id === question.user?._id) {
-            //TODO: create a notification
+            await notificationModel.create({
+                user: req.user?._id,
+                title: 'New Question Reply Received',
+                message: `You have a new question reply in ${courseContent?.title}`,
+            });
         } else {
             const data = {
                 name: question.user.name,
@@ -406,12 +417,16 @@ export const addReview = async (
 
         await course?.save();
 
-        const notification = {
-            title: "New Review Received",
-            message: `${req.user?.name} has given a review in ${course?.name}`,
-        }
+        // const notification = {
+        //     title: "New Review Received",
+        //     message: `${req.user?.name} has given a review in ${course?.name}`,
+        // }
 
-        // TODO: create notification
+        await notificationModel.create({
+            user: req.user?._id,
+            title: 'New Review Received',
+            message: `${req.user?.name} has given a review in ${course?.name}`,
+        });
 
         res.status(200).json({
             success: true,
@@ -475,6 +490,53 @@ export const addReplyToReview = async (
         res.status(200).json({
             success: true,
             course
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+// get all courses -- admin
+export const getAllCourse = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        getAllCoursesService(res);
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+// delete cpurse -- admin
+export const deleteCourse = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        const course = await courseModel.findById(id);
+
+        if (!course) {
+            res.status(404).json({
+                success: false,
+                message: 'Course not found'
+            });
+        }
+
+        await course?.deleteOne({ id });
+
+        await redis.del(id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Course deleted successfully'
         });
 
     } catch (error: any) {

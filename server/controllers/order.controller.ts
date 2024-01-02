@@ -6,7 +6,7 @@ import notificationModel from '../models/notification.model';
 import path from 'path';
 import ejs from 'ejs';
 import sendEmail from '../utils/sendEmail';
-import { newOrder } from '../services/order.service';
+import { getAllOrdersService, newOrder } from '../services/order.service';
 
 // create order
 export const createOrder = async (
@@ -86,6 +86,22 @@ export const createOrder = async (
 
         newOrder(data, res, next);
 
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+// get all orders -- admin
+export const getAllOrders = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        getAllOrdersService(res);
     } catch (error: any) {
         return res.status(500).json({
             success: false,

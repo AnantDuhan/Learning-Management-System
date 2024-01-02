@@ -9,4 +9,14 @@ export const createCourse = async (data: any, res: Response) => {
         success: true,
         course,
     });
-}
+};
+
+// get all courses
+export const getAllCoursesService = async (res: Response) => {
+    const courses = await courseModel.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+        success: true,
+        courses,
+    });
+};
