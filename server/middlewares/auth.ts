@@ -33,7 +33,7 @@ export const isAuthenticated = async (
     if (!user) {
         return res.status(400).json({
             success: false,
-            message: 'user not found!',
+            message: 'Please login to access this resource',
         });
     }
 

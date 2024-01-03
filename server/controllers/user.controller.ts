@@ -255,7 +255,7 @@ export const updateAccessToken = async (
         if (!session) {
             return res.status(400).json({
                 success: false,
-                message,
+                message: 'Please login to access this resource',
             });
         }
 
@@ -265,7 +265,7 @@ export const updateAccessToken = async (
             { id: user._id },
             process.env.ACCESS_TOKEN as string,
             {
-                expiresIn: '2d',
+                expiresIn: '5m',
             }
         );
 
@@ -281,6 +281,8 @@ export const updateAccessToken = async (
 
         res.cookie('access_token', accessToken, accessTokenOptions);
         res.cookie('refresh_token', refreshToken, refreshTokenOptions);
+
+        await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
         res.status(200).json({
             success: true,
