@@ -1,3 +1,4 @@
+'use client';
 import { useChangePasswordMutation } from '../../../redux/features/user/userApi';
 import { styles } from '../../../app/Styles/style';
 import React, { FC, useEffect, useState } from 'react';
@@ -10,30 +11,29 @@ const ChangePassword: FC<Props> = (props) => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const [updatePassword, { isSuccess, isError, error }] = useChangePasswordMutation();
+    const [updatePassword, { isSuccess, isError, error }] =
+        useChangePasswordMutation();
 
-    const passwordChangeHandler = async(e: any) => {
+    const passwordChangeHandler = async (e: any) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
-            toast.error("Passwords do not match");
+            toast.error('Passwords do not match');
         } else {
             await updatePassword({ oldPassword, newPassword });
         }
-
     };
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success("Passwords updated successfully!");
+            toast.success('Passwords updated successfully!');
         }
         if (isError) {
-            if ("data" in error) {
+            if ('data' in error) {
                 const errorData = error as any;
                 toast.error(errorData.data.message);
             }
         }
     }, [isSuccess, isError, error]);
-
 
     return (
         <div className="w-full pl-7 px-2 800px:px-5 800px:pl-0">

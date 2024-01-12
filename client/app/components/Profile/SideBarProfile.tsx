@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image';
 import React, { FC } from 'react';
 import avatarDefault from '../../../public/assests/avatar.png';

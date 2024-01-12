@@ -1,3 +1,4 @@
+'use client';
 import React, { FC, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -25,13 +26,14 @@ const schema = Yup.object().shape({
 
 const SignUp: FC<Props> = ({ setRoute }) => {
     const [show, setShow] = useState(false);
-    const [register, { isError, data, isSuccess, error }] = useRegisterMutation();
+    const [register, { isError, data, isSuccess, error }] =
+        useRegisterMutation();
 
     useEffect(() => {
         if (isSuccess) {
-            const message = data?.message || "Registration successful";
+            const message = data?.message || 'Registration successful';
             toast.success(message);
-            setRoute("Verification")
+            setRoute('Verification');
         }
         if (isError) {
             if ('data' in error) {
@@ -41,7 +43,6 @@ const SignUp: FC<Props> = ({ setRoute }) => {
         }
     }, [isSuccess, isError, setRoute, data, error]);
 
-
     const formik = useFormik({
         initialValues: { name: '', email: '', password: '' },
         validationSchema: schema,
@@ -49,7 +50,7 @@ const SignUp: FC<Props> = ({ setRoute }) => {
             const data = {
                 name,
                 email,
-                password
+                password,
             };
             await register(data);
         },

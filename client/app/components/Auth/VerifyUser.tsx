@@ -1,3 +1,4 @@
+'use client';
 import { useActivationMutation } from '@/redux/features/auth/authApi';
 import { styles } from '../../../app/Styles/style';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -22,16 +23,16 @@ const VerifyUser: FC<Props> = ({ setRoute }) => {
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success("Account activated successfully");
-            setRoute("Login");
+            toast.success('Account activated successfully');
+            setRoute('Login');
         }
         if (isError) {
-            if ("data" in error) {
+            if ('data' in error) {
                 const errorData = error as any;
                 toast.error(errorData.data.message);
                 setInvalidError(true);
             } else {
-                console.log("An error occured", error);
+                console.log('An error occured', error);
             }
         }
     }, [isSuccess, isError, setRoute, error]);
@@ -51,15 +52,15 @@ const VerifyUser: FC<Props> = ({ setRoute }) => {
     ];
 
     const verificationHandler = async () => {
-        const verificationNumber = Object.values(verifyNumber).join("");
+        const verificationNumber = Object.values(verifyNumber).join('');
         if (verificationNumber.length !== 4) {
             setInvalidError(true);
             return;
         }
         await activation({
             activation_token: token,
-            activation_code: verificationNumber
-        })
+            activation_code: verificationNumber,
+        });
     };
 
     const handleInputChange = (index: number, value: string) => {
@@ -95,7 +96,7 @@ const VerifyUser: FC<Props> = ({ setRoute }) => {
                             w-[65px] h-[65px] bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-Poppins outline-none text-center
                             ${
                                 invalidError
-                                    ? "shake border-red-500"
+                                    ? 'shake border-red-500'
                                     : ' dark:border-white border-[#0000004a] '
                             }
                             `}
@@ -120,9 +121,10 @@ const VerifyUser: FC<Props> = ({ setRoute }) => {
             </div>
             <br />
             <h5 className="text-center pt-4 font-Poppins text-[14px]">
-                Go back to sign in? <span
+                Go back to sign in?{' '}
+                <span
                     className="text-[#2190ff] pl-1 cursor-pointer"
-                    onClick={() => setRoute("Login")}
+                    onClick={() => setRoute('Login')}
                 >
                     Sign in
                 </span>

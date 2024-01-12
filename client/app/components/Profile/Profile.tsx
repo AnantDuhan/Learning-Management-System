@@ -1,3 +1,4 @@
+'use client';
 import React, { FC, useState } from 'react';
 import SideBarProfile from './SideBarProfile';
 import { useLogoutQuery } from '../../../redux/features/auth/authApi';
@@ -22,7 +23,7 @@ const Profile: FC<Props> = ({ user }) => {
     const logOutHandler = async () => {
         // setLogout(true);
         // await signOut();
-        console.log("logout")
+        console.log('logout');
     };
 
     if (typeof window !== 'undefined') {

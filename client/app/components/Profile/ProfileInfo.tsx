@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image';
 import React, { FC, useEffect, useState } from 'react';
 import avatarIcon from '../../../public/assests/avatar.png';

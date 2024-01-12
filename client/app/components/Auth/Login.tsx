@@ -1,3 +1,4 @@
+'use client';
 import React, { FC, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -40,7 +41,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
         if (isSuccess) {
             const message = data?.message || 'Logged in successfully';
             toast.success(message);
-            setOpen(false)
+            setOpen(false);
         }
         if (isError) {
             if ('data' in error) {
