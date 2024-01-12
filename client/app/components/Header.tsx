@@ -12,8 +12,8 @@ import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import avatar from '../../public/assests/avatar.png';
 import { useSession } from 'next-auth/react';
-import { useSocialAuthMutation } from '@/redux/features/auth/authApi';
-import toast from 'react-hot-toast/headless';
+import { useLogoutQuery, useSocialAuthMutation } from '../../redux/features/auth/authApi';
+import toast from 'react-hot-toast';
 
 type Props = {
     open: boolean;
@@ -26,10 +26,15 @@ type Props = {
 const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
+    const [logout, setLogout] = useState(false);
 
     const { user } = useSelector((state: any) => state.auth);
     const { data } = useSession();
     const [socialAuth, { isSuccess, isError, error }] = useSocialAuthMutation();
+
+    const {} = useLogoutQuery(undefined, {
+        skip: !logout ? true : false,
+    });
 
     useEffect(() => {
         if (!user) {
@@ -41,8 +46,13 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                 });
             }
         }
-        if (isSuccess) {
-            toast.success("Login Successful")
+        if (data === null) {
+            if (isSuccess) {
+                toast.success("Login Successful")
+            }
+        }
+        if (data === null) {
+            setLogout(true);
         }
     }, [data, user, socialAuth, isSuccess]);
 
@@ -106,7 +116,15 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                                                 : avatar
                                         }
                                         alt=""
+                                        width={120}
+                                        height={120}
                                         className="w-[30px] h-[30px] rounded-full"
+                                        style={{
+                                            border:
+                                                activeItem === 5
+                                                    ? '2px solid #ffc107'
+                                                    : 'none',
+                                        }}
                                     />
                                 </Link>
                             ) : (
@@ -137,7 +155,15 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                                                 : avatar
                                         }
                                         alt=""
-                                        className="w-[30px] h-[30px] rounded-full ml-5 mt-3"
+                                        width={120}
+                                        height={120}
+                                        className="w-[30px] h-[30px] rounded-full"
+                                        style={{
+                                            border:
+                                                activeItem === 5
+                                                    ? '2px solid #ffc107'
+                                                    : 'none',
+                                        }}
                                     />
                                 </Link>
                             ) : (
