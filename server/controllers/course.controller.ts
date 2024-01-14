@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendEmail';
+import axios from 'axios';
 
 export const uploadCourse = async (
     req: Request,
@@ -539,6 +540,30 @@ export const deleteCourse = async (req: Request, res: Response, next: NextFuncti
             message: 'Course deleted successfully'
         });
 
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+// generate video url
+export const generateVideoUrl = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { videoId } = req.body;
+        const response = await axios.post(
+            `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+            { ttl: 300 },
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Apisecret ${process.env.VIDEO_PLAYER_API_SECRET}`,
+                },
+            }
+        );
+        res.json(response.data);
     } catch (error: any) {
         return res.status(500).json({
             success: false,

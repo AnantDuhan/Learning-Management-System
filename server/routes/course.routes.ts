@@ -7,6 +7,7 @@ import {
     addReview,
     deleteCourse,
     editCourse,
+    generateVideoUrl,
     getAllCourse,
     getAllCourses,
     getCourseByUser,
@@ -17,11 +18,11 @@ import {
 const courseRouter = express.Router();
 
 courseRouter
-    .route('/create/course')
+    .route('/admin/create/course')
     .post(isAuthenticated, authorizeRoles('admin'), uploadCourse);
 
 courseRouter
-    .route('/update/course/:id')
+    .route('/admin/update/course/:id')
     .put(isAuthenticated, authorizeRoles('admin'), editCourse);
 
 courseRouter.route('/course/:id').get(isAuthenticated, getSingleCourse);
@@ -37,15 +38,17 @@ courseRouter.route('/add/answer').put(isAuthenticated, addAnswer);
 courseRouter.route('/add/review/:id').put(isAuthenticated, addReview);
 
 courseRouter
-    .route('/review/reply')
+    .route('/admin/review/reply')
     .put(isAuthenticated, authorizeRoles('admin'), addReplyToReview);
 
 courseRouter
-    .route('/courses/all')
+    .route('/admin/courses/all')
     .get(isAuthenticated, authorizeRoles('admin'), getAllCourse);
 
+courseRouter.route('/get/vdocipher/otp').post(generateVideoUrl);
+
 courseRouter
-    .route('/delete/course/:id')
+    .route('/admin/delete/course/:id')
     .delete(isAuthenticated, authorizeRoles('admin'), deleteCourse);
 
 export default courseRouter;

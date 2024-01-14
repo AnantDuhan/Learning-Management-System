@@ -19,6 +19,7 @@
     "@types/node": "^20.10.5",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.14",
+    "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.1",
     "cookie-parser": "^1.4.6",

@@ -24,14 +24,14 @@ userRouter.route('/update/password').put(isAuthenticated, updatePassword);
 
 userRouter.route('/update/avatar').put(isAuthenticated, updateProfilePicture);
 
-userRouter.route('/users/all').get(isAuthenticated, authorizeRoles('admin'), getAllUsers);
+userRouter.route('/admin/users').get(isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
 userRouter
-    .route('/update/user/role')
+    .route('/admin/update/user/role')
     .put(isAuthenticated, authorizeRoles('admin'), updateUserRole);
 
 userRouter
-    .route('/delete/user/:id')
+    .route('/admin/delete/user/:id')
     .delete(isAuthenticated, authorizeRoles('admin'), deleteUser);
 
 

@@ -106,7 +106,7 @@ const SideBarProfile: FC<Props> = ({
                             ? 'dark:bg-slate-800 bg-white'
                             : 'bg-transparent'
                     }`}
-                    href={'/admin/dashboard'}
+                    href={'/admin'}
                 >
                     <MdAdminPanelSettings
                         size={20}

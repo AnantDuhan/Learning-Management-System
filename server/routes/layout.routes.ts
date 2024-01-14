@@ -5,11 +5,11 @@ import { createLayout, editLayout, getLayoutByType } from '../controllers/layout
 const layoutRouter = express.Router();
 
 layoutRouter
-    .route('/create/layout')
+    .route('/admin/create/layout')
     .post(isAuthenticated, authorizeRoles('admin'), createLayout);
 
 layoutRouter
-    .route('/update/layout')
+    .route('/admin/update/layout')
     .put(isAuthenticated, authorizeRoles('admin'), editLayout);
 
 layoutRouter.route('/layout').get(getLayoutByType);

@@ -13,25 +13,25 @@ interface ITokenOptions {
 
 // parse env variables to integrates with fallback values
 const accessTokenExpires = parseInt(
-    process.env.ACCESS_TOKEN_EXPIRE || '500',
+    process.env.ACCESS_TOKEN_EXPIRE || '50000',
     10
 );
 const refreshTokenExpires = parseInt(
-    process.env.REFRESH_TOKEN_EXPIRE || '1200',
+    process.env.REFRESH_TOKEN_EXPIRE || '120000',
     10
 );
 
 // options for cookies
 export const accessTokenOptions: ITokenOptions = {
-    expires: new Date(Date.now() + accessTokenExpires * 60 * 60 * 1000),
-    maxAge: accessTokenExpires * 60 * 60 * 1000,
+    expires: new Date(Date.now() + accessTokenExpires * 9 * 24 * 60 * 60 * 1000),
+    maxAge: accessTokenExpires * 9 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: 'lax',
 };
 
 export const refreshTokenOptions: ITokenOptions = {
-    expires: new Date(Date.now() + refreshTokenExpires * 24 * 60 * 60 * 1000),
-    maxAge: refreshTokenExpires * 24 * 60 * 60 * 1000,
+    expires: new Date(Date.now() + refreshTokenExpires * 9 * 24 * 60 * 60 * 1000),
+    maxAge: refreshTokenExpires * 9 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: 'lax',
 };

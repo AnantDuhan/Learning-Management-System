@@ -37,7 +37,7 @@ export const registerUser = async (req: Request, res: Response) => {
         const user: IRegistrationBody = {
             name,
             email,
-            password,
+            password
         };
 
         const activationToken = createActivationToken(user);
@@ -355,22 +355,9 @@ export const updateUserInfo = async (
     next: NextFunction
 ) => {
     try {
-        const { name, email } = req.body as IUpdateUserInfo;
-
+        const { name } = req.body as IUpdateUserInfo;
         const userId = req.user?._id;
-
         const user = await userModel.findById(userId);
-
-        if (email && user) {
-            const isEmailExist = await userModel.findOne({ email });
-            if (isEmailExist) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Email already exists',
-                });
-            }
-            user.email = email;
-        }
 
         if (name && user) {
             user.name = name;
@@ -471,7 +458,7 @@ export const updateProfilePicture = async (
                 await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
 
                 const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-                    folder: 'food-delivery-avatars',
+                    folder: 'lms-avatars',
                     width: 150,
                 });
                 user.avatar = {
