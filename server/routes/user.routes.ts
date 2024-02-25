@@ -10,29 +10,52 @@ userRouter.route('/activate-user').post(activateUser);
 
 userRouter.route('/login').post(loginUser);
 
-userRouter.route('/logout',).get(isAuthenticated, logoutUser);
+// userRouter.route('/logout',).get(isAuthenticated, logoutUser);
 
-userRouter.route('/refresh').get(updateAccessToken);
+userRouter.route('/refresh').get(isAuthenticated, updateAccessToken);
 
-userRouter.route('/me').get(isAuthenticated, getUserInfo);
+userRouter.route('/me').get(updateAccessToken, isAuthenticated, getUserInfo);
 
 userRouter.route('/social-auth').post(socialAuth);
 
-userRouter.route('/update/user').put(isAuthenticated, updateUserInfo);
+userRouter
+    .route('/update/user')
+    .put(updateAccessToken, isAuthenticated, updateUserInfo);
 
-userRouter.route('/update/password').put(isAuthenticated, updatePassword);
+userRouter
+    .route('/update/password')
+    .put(updateAccessToken, isAuthenticated, updatePassword);
 
-userRouter.route('/update/avatar').put(isAuthenticated, updateProfilePicture);
+userRouter
+    .route('/update/avatar')
+    .put(updateAccessToken, isAuthenticated, updateProfilePicture);
 
-userRouter.route('/admin/users').get(isAuthenticated, authorizeRoles('admin'), getAllUsers);
+userRouter
+    .route('/admin/users')
+    .get(
+        updateAccessToken,
+        isAuthenticated,
+        authorizeRoles('admin'),
+        getAllUsers
+    );
 
 userRouter
     .route('/admin/update/user/role')
-    .put(isAuthenticated, authorizeRoles('admin'), updateUserRole);
+    .put(
+        updateAccessToken,
+        isAuthenticated,
+        authorizeRoles('admin'),
+        updateUserRole
+    );
 
 userRouter
     .route('/admin/delete/user/:id')
-    .delete(isAuthenticated, authorizeRoles('admin'), deleteUser);
+    .delete(
+        updateAccessToken,
+        isAuthenticated,
+        authorizeRoles('admin'),
+        deleteUser
+    );
 
 
 export default userRouter;

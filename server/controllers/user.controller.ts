@@ -284,10 +284,7 @@ export const updateAccessToken = async (
 
         await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
-        res.status(200).json({
-            success: true,
-            accessToken,
-        });
+        next();
     } catch (error: any) {
         return res.status(500).json({
             success: false,
@@ -447,7 +444,7 @@ export const updateProfilePicture = async (
     next: NextFunction
 ) => {
     try {
-        const { avatar } = req.body;
+        const { avatar } = req.body as IUpdateProfilePicture;
 
         const userId = req.user?._id;
 

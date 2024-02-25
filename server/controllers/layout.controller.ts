@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import layoutModel from '../models/layout.model';
 import cloudinary from 'cloudinary';
-import { resolveSoa } from 'dns/promises';
 
 // create layout
 export const createLayout = async (
