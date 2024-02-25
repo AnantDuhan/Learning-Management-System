@@ -1,14 +1,14 @@
 'use client'
+import AdminProtected from '../../../app/hooks/useAdminProtected';
 import DashboardHeader from '../../../app/components/Admin/DashboardHeader';
 import AdminSidebar from '../../../app/components/Admin/sidebar/AdminSidebar';
 import Heading from '../../../app/utils/Heading';
 import React, { FC } from 'react'
-import CreateCourse from '../../../app/components/Admin/Course/CreateCourse';
-import AdminProtected from '../../../app/hooks/useAdminProtected';
+// import DashboardHero from '../../../app/components/Admin/DashboardHero';
 
 type Props = {}
 
-const Page: FC<Props> = (props) => {
+const Page:FC<Props> = () => {
   return (
       <div>
           <AdminProtected>
@@ -23,7 +23,6 @@ const Page: FC<Props> = (props) => {
                   </div>
                   <div className="w-[85%]">
                       <DashboardHeader />
-                      <CreateCourse />
                   </div>
               </div>
           </AdminProtected>

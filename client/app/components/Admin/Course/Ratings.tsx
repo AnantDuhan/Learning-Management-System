@@ -1,3 +1,4 @@
+'use client'
 import React, { FC } from 'react';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import { BsStarHalf } from 'react-icons/bs';
@@ -9,7 +10,7 @@ type Props = {
 const Ratings: FC<Props> = ({ rating }) => {
     const stars = [];
 
-    for (let i = 0; i <= 5; i++) {
+    for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
             stars.push(
                 <AiFillStar

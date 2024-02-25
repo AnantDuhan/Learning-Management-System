@@ -1,16 +1,18 @@
 'use client';
-import { Description } from '@mui/icons-material';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import CourseInformation from './CourseInformation';
 import CourseOptions from './CourseOptions';
 import CourseData from './CourseData';
 import CourseContent from './CourseContent';
 import CoursePreview from './CoursePreview';
+import { useCreateCourseMutation } from '@/redux/features/courses/coursesApi';
+import toast from 'react-hot-toast';
+import { redirect } from 'next/navigation';
 
 type Props = {};
 
 const CreateCourse: FC<Props> = (props) => {
-    const [active, setActive] = useState(3);
+    const [active, setActive] = useState(0);
     const [courseInfo, setCourseInfo] = useState({
         name: '',
         description: '',
@@ -39,6 +41,8 @@ const CreateCourse: FC<Props> = (props) => {
         },
     ]);
     const [courseData, setCourseData] = useState({});
+
+    const [createCourse, {isSuccess, isLoading, isError, error}] = useCreateCourseMutation();
 
     const handleSubmit = async () => {
         // format benefits array
@@ -81,9 +85,26 @@ const CreateCourse: FC<Props> = (props) => {
         setCourseData(data);
     };
 
-    const handleCourseCreate = (e: any) => {
+    const handleCourseCreate = async (e: any) => {
         const data = courseData;
+
+        if (!isLoading) {
+            await createCourse(data);
+        }
     }
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success('Course created successfully!');
+            redirect('/admin/courses');
+        }
+        if (isError) {
+            if ("data" in error) {
+                const errorMessage = error as any;
+                toast.error(errorMessage.data.message);
+            }
+        }
+    }, [isLoading, isSuccess, isError, error]);
 
     return (
         <div className="w-full flex min-h-screen">

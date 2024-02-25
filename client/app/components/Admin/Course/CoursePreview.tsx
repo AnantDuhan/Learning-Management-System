@@ -1,3 +1,4 @@
+'use client'
 import { styles } from '../../../../app/Styles/style';
 import CoursePlayer from '../../../../app/utils/CoursePlayer';
 import React, { FC, useState } from 'react'
@@ -101,6 +102,7 @@ const CoursePreview: FC<Props> = ({
                       What you will learn from this course?
                   </h1>
               </div>
+              {console.log(courseData)}
               {courseData?.benefits?.map((item: any, index: number) => {
                   <div
                       className="w-full flex 800px:items-center py-2"
